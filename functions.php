@@ -52,7 +52,7 @@
 		// This variable is intended to be overruled from themes.
 		// Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-		$GLOBALS['content_width'] = apply_filters( '_test_content_width', 640 );
+		$GLOBALS['content_width'] = apply_filters( '_test_content_width', 1200 );
 	}
 	add_action( 'after_setup_theme', '_test_content_width', 0 );
 
@@ -65,78 +65,3 @@
 		wp_enqueue_style( '_test-style', get_stylesheet_uri() );
 	}
 	add_action( 'wp_enqueue_scripts', '_test_scripts' );
-
-
-
-/**
- * WebMan Amplifier plugin.
- */
-
-	/**
-	 * Testing metabox WYSIWYG editor.
-	 */
-	if ( function_exists( 'wma_meta_option' ) ) {
-
-		// Admin only.
-		if ( function_exists( 'wma_add_meta_box' ) ) {
-
-			function _test_wma_metabox( $fields = array() ) {
-
-				// Tab: WYSIWYG test
-
-					$fields[] = array(
-						'type'  => 'section-open',
-						'id'    => 'wysiwyg-test',
-						'title' => 'WYSIWYG test',
-					);
-
-					$desc  = 'This text should display on top of post content in a blue box. ';
-					$desc .= 'We are testing for <a href="https://github.com/WordPress/gutenberg/issues/7176">Gutenberg compatibility here</a>. ';
-
-					$fields[] = array(
-						'type'        => 'textarea',
-						'id'          => 'wysiwyg',
-						'label'       => 'WYSIWYG test <br><br><small>' . $desc . '</small>',
-						'description' => $desc,
-						'editor'      => true,
-					);
-
-					$fields[] = array(
-						'type' => 'section-close',
-					);
-
-				return $fields;
-			}
-
-			wma_add_meta_box( array(
-				'fields' => '_test_wma_metabox',
-				'id'     => '_test-metabox',
-				'pages'  => array( 'post', 'page' ),
-				'title'  => 'Test metabox',
-			) );
-
-		}
-
-		/**
-		 * Displaying field content on front end.
-		 */
-		function _test_wma_display_wysiwyg( $entry_content ) {
-			if ( function_exists( 'wma_meta_option' ) ) {
-				$entry_content = '<div class="test-content wysiwyg">' . wma_meta_option( 'wysiwyg' ) . '</div>' . $entry_content;
-			}
-
-			return $entry_content;
-		}
-		add_filter( 'the_content', '_test_wma_display_wysiwyg' );
-
-	} else {
-
-		/**
-		 * Prompt to install the plugin.
-		 */
-		function _test_wma_prompt( $entry_content ) {
-			return '<div class="alert">Install and activate <a href="https://wordpress.org/plugins/webman-amplifier/">WebMan Amplifier</a> plugin first</div>';
-		}
-		add_filter( 'the_content', '_test_wma_prompt' );
-
-	}
